@@ -5,69 +5,67 @@
     </head>
     <body>
         <script>
- // User choice
- var userChoice = prompt("Do you choose rock, paper or scissors?");
+ var moves, result;
 
-if (! userChoice) {
-    // User choice was undefined
-    document.write("<p>Player 1, you cheated! Refresh this screen and fight like a man.</p>");
-} else {
-    // Display user choice
-    document.write("<p>Player 1:" + " " + userChoice + "</p>");
-}
-
-// Computer choice
-var computerChoice = Math.random();
-if (computerChoice < 0.34) {
-    computerChoice = "rock";
-} else if(computerChoice <= 0.67) {
-    computerChoice = "paper";
-} else {
-    computerChoice = "scissors";
-}
-
-// Display computer choice
-document.write("<p>Computer:" + " " + computerChoice + "</p>");
-
-// Compare user choice vs computer choice
-var compare = function(choice1,choice2) {
-    if (choice1 === choice2) {
-        return "It's a tie!";
-    }
-    if (choice1 === "rock") {
-        if (choice2 === "scissors") {
-            // rock wins
-            return "You win!";
-        } else {
-            // paper wins
-            return "You lose! Try again.";
-        }
-    }
-    if (choice1 === "paper") {
-        if (choice2 === "rock") {
-            // paper wins
-            return "You win!";
-        } else {
-            // scissors wins
-            return "You lose! Try again.";
-        }
-    }
-    if (choice1 === "scissors") {
-        if (choice2 === "rock") {
-            // rock wins
-            return "You lose! Try again.";
-        } else {
-            // scissors wins
-            return "You win!";
-        }
-    }
+moves = {
+    rock: 0, 
+    paper: 1, 
+    scissors: 2,
 };
 
-// Run the compare function
-var results = compare(userChoice,computerChoice);
+result = {
+    win: 0,
+    tie: 0,
+    lose: 0
+};
 
-// Display results
-document.write("<br><hr><br>" + results);
+function convertMoves() {
+    playerSelection = prompt('Please choose rock, paper, or scissors').toLowerCase();
+    return moves[playerSelection];
+}
+
+function computerPlay() {
+    var movesValues = Object.values(moves);
+    var random = Math.floor(Math.random() * movesValues.length);
+    return movesValues[random];
+} 
+
+function playRound(playerSelection, computerSelection) {
+    var processResult = (3 + computerSelection - playerSelection) % 3;
+
+    if (!processResult) {
+        ++result.tie;
+        console.log('tie');
+    } else if (1 == processResult) {
+        ++result.lose;
+        console.log('You lost');
+    } else {
+        ++result.win;
+        console.log('You won');
+    }
+
+    return function() {
+        var rounds = 0;
+        var resultValues = Object.values(result);
+
+        for (var i = 0; i < resultValues.length; i++) {
+            rounds += resultValues[i];
+        }
+
+        console.log(rounds);
+        if (rounds !== 5) {
+            convertMoves();
+            playRound(playerSelection, computerSelection)();
+        }
+
+        return result;
+    }
+}
+
+var computerSelection = computerPlay();
+var playerSelection = convertMoves();
+
+console.log(playRound(playerSelection, computerSelection)());
         </script>
     </body>
 </html>
