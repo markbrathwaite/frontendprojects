@@ -1,0 +1,206 @@
+<html><head>
+  <meta charset="utf-8">
+  <title>Calcy-lator :)</title>
+  <meta name="author" content="">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="css/stylesheet.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&amp;display=swap" rel="stylesheet"> 
+</head>
+
+<body>
+  <div id="container">    
+    <label id="wDisplay">0</label>
+    <label id="display">0</label>
+
+    <button class="number" id="zero" value="0">0</button>
+    <button class="number" id="one" value="1">1</button>
+    <button class="number" id="two" value="2">2</button>
+    <button class="number" id="three" value="3">3</button>
+    <button class="number" id="four" value="4">4</button>
+    <button class="number" id="five" value="5">5</button>
+    <button class="number" id="six" value="6">6</button>
+    <button class="number" id="seven" value="7">7</button>
+    <button class="number" id="eight" value="8">8</button>
+    <button class="number" id="nine" value="9">9</button>
+    <button class="decimal" id="decimal" value=".">.</button>
+    
+    <button class="operator" id="divide" value="divide">/</button>
+    <button class="operator" id="multiply" value="multiply">*</button>
+    <button class="operator" id="add" value="add">+</button>
+    <button class="operator" id="subtract" value="subtract">-</button>
+    <button id="operate" value="operate">=</button>
+    <button id="clear" value="clear">AC</button>
+
+  </div>
+
+
+<script>
+  let last = document.querySelector('#zero');
+
+  let answer = document.querySelector('#display');
+  let wDisplay = document.querySelector('#wDisplay');
+  let numbers = document.querySelectorAll('#container .number');
+  numbers.forEach(number => number.addEventListener('click', fillWorkingDisplay));
+
+  let decimals = document.querySelector('#decimal');
+  decimals.addEventListener('click', fillWorkingDisplay);
+
+  let clearButton = document.querySelector('#clear');
+  clearButton.addEventListener('click', clear);
+
+  let operators = document.querySelectorAll('.operator');
+  operators.forEach(operator => operator.addEventListener('click', fillWorkingDisplay));
+
+  let equal = document.querySelector("#operate");
+  equal.addEventListener('click', equals);
+
+  function equals() { 
+      list = wDisplay.textContent.split(/([*/+-])/g);
+      countMultDiv = list.filter(x => (x === '*' || x ==='/')).length;
+      countAddSub = list.filter(x => (x === '+' || x ==='-')).length;
+
+      //do multiplication/division and replace involved indices with answer
+      for (i=0; i < countMultDiv; i++){
+        if (list.indexOf('/') > list.indexOf('*') && list.indexOf('/') > -1) {
+            result = divide(+list[list.indexOf('/')-1], +list[list.indexOf('/')+1]);
+            list.splice(list.indexOf('/')-1,3,result);
+        } else if (list.indexOf('*') > list.indexOf('/') && list.indexOf('*') > -1) {
+            result = multiply(+list[list.indexOf('*')-1], +list[list.indexOf('*')+1]);
+            list.splice(list.indexOf('*')-1,3,result);
+        }
+      }
+      //do addition/subtraction and replace
+      for (i=0; i < countAddSub; i++){
+        if (list.indexOf('+') > list.indexOf('-') && list.indexOf('+') > -1) {
+            result = add(+list[list.indexOf('+')-1], +list[list.indexOf('+')+1]);
+            list.splice(list.indexOf('+')-1,3,result);
+        } else if (list.indexOf('-') > list.indexOf('+') && list.indexOf('-') > -1) {
+            result = subtract(+list[list.indexOf('-')-1], +list[list.indexOf('-')+1]);
+            list.splice(list.indexOf('-')-1,3,result);
+        }
+      }
+      answer.textContent = list[0];
+      wDisplay.textContent = 0;
+  }
+
+  function fillWorkingDisplay(button) {
+    console.log(button);
+    checkFirstChar();
+
+    if (wDisplay.textContent == '0') {
+        wDisplay.textContent = button.target.textContent;
+        last = button.target;
+    } else if (checkDecimal(button) && button.target.className === "decimal") {
+        wDisplay.textContent += button.target.textContent;
+        last = button.target;
+    } else if (button.target.className === "number") {
+        wDisplay.textContent += button.target.textContent;
+        last = button.target;
+    } else if (button.target.className === "operator") {
+        if (last.className === "operator") {
+            wDisplay.textContent = wDisplay.textContent.slice(0, -1);
+            wDisplay.textContent += button.target.textContent;
+            last = button.target;
+        } else {
+            wDisplay.textContent += button.target.textContent;
+            last = button.target;
+        }
+    }}
+
+  function checkFirstChar() {
+      if (wDisplay.textContent[0] != +wDisplay.textContent[0]) {
+          wDisplay.textContent = answer.textContent + wDisplay.textContent;
+      } 
+  }
+
+  function checkDecimal(button) {
+      list = wDisplay.textContent.split(/[*/+-]/g);
+      if (list[list.length - 1].indexOf('.') > -1) {
+        return false;
+      } return true;
+  }
+
+  function clear() {
+      wDisplay.textContent = '0';
+      answer.textContent = '0';
+      last = document.querySelector('#zero');
+  }
+
+  function add(a, b) {
+      return a + b;
+  }  
+
+  function subtract(a, b) {
+      return a - b;
+  }
+
+  function multiply(a, b) {
+      return a * b;
+  }
+
+  function divide(a, b) {
+      return a / b;
+  }
+
+  function operate(operator, a, b) {
+      return operator(a, b);
+  }
+
+document.addEventListener('keydown', event => {
+    if (event.code === 'Digit1') {
+        document.querySelector('#one').click();
+    }
+    else if (event.code === 'Digit2') {
+        document.querySelector('#two').click();
+    }
+    else if (event.code === 'Digit3') {
+        document.querySelector('#three').click();
+    }
+    else if (event.code === 'Digit4') {
+        document.querySelector('#four').click();
+    }
+    else if (event.code === 'Digit5') {
+        document.querySelector('#five').click();
+    }
+    else if (event.code === 'Digit6') {
+        document.querySelector('#six').click();
+    }
+    else if (event.code === 'Digit7') {
+        document.querySelector('#seven').click();
+    }
+    else if (event.code === 'Digit8') {
+        document.querySelector('#eight').click();
+    }
+    else if (event.code === 'Digit9') {
+        document.querySelector('#nine').click();
+    }
+    else if (event.code === 'Digit0') {
+        document.querySelector('#zero').click();
+    }
+    else if (event.key === '.' || event.keyCode == 110) {
+        document.querySelector('#decimal').click();
+    }
+    else if (event.key === '-' || event.keyCode == 109) {
+        document.querySelector('#subtract').click();
+    }
+    else if (event.code === 'Enter') {
+        document.querySelector('#operate').click();
+    }
+    else if (event.code === 'Escape') {
+        document.querySelector('#clear').click();
+    }
+    else if (event.key === '*' || event.keyCode == 106) {
+        document.querySelector('#multiply').click();
+    }
+    else if (event.key === '+' || event.keyCode == 107) {
+        document.querySelector('#add').click();
+    } 
+    else if (event.key === '/' || event.keyCode == 111) {
+        document.querySelector('#divide').click();
+    }
+});
+</script>
+
+</body></html>
